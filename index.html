@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kara Jueckstock · Maps & Spatial Storytelling</title>
+<meta name="description" content="Cartography and spatial storytelling by Kara Jueckstock, a GIS specialist in Lansing, Michigan.">
+<style>
+  :root {
+    --paper: #F4ECDD;
+    --paper-deep: #EADFCB;
+    --ink: #2E2722;
+    --ink-soft: #6B6158;
+    --crimson: #9E1B32;
+    --cobalt: #1F4BFF;
+    --line: #D9CCB4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "EB Garamond", Garamond, "Adobe Garamond Pro", Georgia, serif;
+    font-size: 19px;
+    line-height: 1.6;
+  }
+  .sans {
+    font-family: "Gill Sans Nova", "Gill Sans MT", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  }
+  a { color: var(--crimson); }
+  a:hover { color: var(--cobalt); }
+
+  /* Header */
+  header {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 72px 28px 40px;
+    text-align: center;
+  }
+  header h1 {
+    font-weight: 400;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    line-height: 1.15;
+  }
+  header .tagline {
+    margin-top: 14px;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: var(--ink-soft);
+  }
+  nav {
+    margin-top: 28px;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+  }
+  nav a {
+    color: var(--ink);
+    text-decoration: none;
+    margin: 0 14px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid transparent;
+  }
+  nav a:hover { border-bottom-color: var(--crimson); color: var(--ink); }
+
+  .rule {
+    width: 60px;
+    height: 1px;
+    background: var(--crimson);
+    margin: 0 auto;
+  }
+
+  /* Sections */
+  section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 56px 28px;
+  }
+  h2 {
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+  }
+
+  /* Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px 32px;
+  }
+  .map-card { cursor: zoom-in; }
+  .map-card .frame {
+    background: var(--paper-deep);
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .map-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+  .map-card:hover img { transform: scale(1.03); }
+  .map-card .day {
+    margin-top: 14px;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--crimson);
+  }
+  .map-card h3 {
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+  .map-card p {
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    margin-top: 4px;
+  }
+
+  /* About */
+  .about {
+    max-width: 680px;
+    margin: 0 auto;
+    font-size: 1.15rem;
+  }
+  .about p + p { margin-top: 1em; }
+
+  /* Contact */
+  .contact { text-align: center; font-size: 1.15rem; }
+  .contact .links {
+    margin-top: 18px;
+    font-size: 0.82rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .contact .links a { margin: 0 12px; text-decoration: none; }
+
+  footer {
+    text-align: center;
+    padding: 40px 28px 56px;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--ink-soft);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 16, 12, 0.92);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+    z-index: 10;
+    cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 100%;
+    max-height: 86vh;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  .lightbox .caption {
+    color: #F3E7D3;
+    margin-top: 16px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    header { padding-top: 48px; }
+    nav a { margin: 0 8px; }
+    section { padding: 40px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kara Jueckstock</h1>
+  <p class="tagline">Maps &amp; spatial storytelling from Michigan</p>
+  <nav class="sans">
+    <a href="#maps">Maps</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<div class="rule"></div>
+
+<section id="maps">
+  <h2 class="sans">#30DayMapChallenge 2026</h2>
+  <div class="gallery">
+
+    <!-- To add a map: upload the image file into the CartoPortfolio folder, then copy one <figure> block
+         and change the file name, day, title and caption. File names must match exactly. -->
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/ThroughtheWindow.png" alt="Downtown Lansing parcels styled as a glowing stained glass rose window" loading="lazy"></div>
+      <div class="day sans">Day 25 · Is this a map?</div>
+      <h3>Through the Window</h3>
+      <p>Downtown Lansing parcels, colored by size, as stained glass.</p>
+    </figure>
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/Saffron.png" alt="Map of saffron production centered on a gold glow over Khorasan, Iran" loading="lazy"></div>
+      <div class="day sans">Day 23 · Taste</div>
+      <h3>Threads of Gold</h3>
+      <p>Nine in ten saffron threads grow in one region of northeastern Iran.</p>
+    </figure>
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/WeRemember.png" alt="Michigan filled with hexagons in the stripes of the transgender pride flag" loading="lazy"></div>
+      <div class="day sans">Day 20 · Hexagons</div>
+      <h3>We Remember. We Remain.</h3>
+      <p>A Trans Day of Remembrance flag, from the Keweenaw to the Ohio line.</p>
+    </figure>
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/NegativeSpace.png" alt="The Great Lakes and Michigan's rivers in cobalt blue with no land drawn" loading="lazy"></div>
+      <div class="day sans">Day 19 · Null</div>
+      <h3>Negative Space</h3>
+      <p>Michigan, as told by the water.</p>
+    </figure>
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/Networks.png" alt="Map of an underground drain network glowing on a dark background" loading="lazy"></div>
+      <div class="day sans">#30DayMapChallenge</div>
+      <h3>Networks</h3>
+      <p>Edit this caption to describe the map.</p>
+    </figure>
+
+    <figure class="map-card">
+      <div class="frame"><img src="CartoPortfolio/PalmReading.jpg" alt="Hand-drawn map of Michigan as two hands, marked with friends' favorite places" loading="lazy"></div>
+      <div class="day sans">Hand-drawn</div>
+      <h3>Palm Reading</h3>
+      <p>Where we think our favorite places in Michigan are.</p>
+    </figure>
+
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="about">
+  <h2 class="sans">About</h2>
+  <div class="about">
+    <p>I'm a GIS specialist in Lansing, Michigan, and I believe a good map makes a complicated system feel legible. Most days that means stormwater and infrastructure; on others it means rivers drawn without land, saffron glowing over a desert, or a city turned into stained glass.</p>
+    <p>I'm especially interested in helping Michigan communities tell the stories hidden in their own data: the drains under their streets, the water that shapes their towns, the places people love.</p>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="contact" class="contact">
+  <h2 class="sans">Contact</h2>
+  <p>Have a map in mind? I'd love to hear about it.</p>
+  <div class="links sans">
+    <a href="mailto:hello@example.com">Email</a>
+    <a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</section>
+
+<footer class="sans">© 2026 Kara Jueckstock</footer>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <img id="lightbox-img" src="" alt="">
+  <div class="caption" id="lightbox-caption"></div>
+</div>
+
+<script>
+  const box = document.getElementById('lightbox');
+  const boxImg = document.getElementById('lightbox-img');
+  const boxCap = document.getElementById('lightbox-caption');
+  document.querySelectorAll('.map-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const img = card.querySelector('img');
+      boxImg.src = img.src;
+      boxImg.alt = img.alt;
+      boxCap.textContent = card.querySelector('h3').textContent;
+      box.classList.add('open');
+    });
+  });
+  box.addEventListener('click', () => box.classList.remove('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') box.classList.remove('open'); });
+</script>
+
+</body>
+</html>
