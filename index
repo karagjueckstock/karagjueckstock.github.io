@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kara Jueckstock · Geographer & Storyteller</title>
+<meta name="description" content="Maps and spatial storytelling by Kara Jueckstock, a geographer in Lansing, Michigan.">
+<!-- Fonts via Bunny Fonts, a privacy-friendly mirror of Google Fonts -->
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=cormorant-garamond:400,500,400i|eb-garamond:400,400i|caveat:400,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F3ECDD;
+    --paper-deep: #E9DFCB;
+    --ink: #3F4A26;        /* deep olive ink */
+    --ink-soft: #6E6A55;
+    --bark: #5B4636;
+    --sage: #9AA77E;
+    --rose: #C98B86;
+    --cobalt: #1F4BFF;     /* the one bright accent, from Negative Space */
+    --line: #B9AE92;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    color: var(--ink);
+    font-family: "EB Garamond", Garamond, Georgia, serif;
+    font-size: 19px;
+    line-height: 1.65;
+    background-color: var(--paper);
+    /* faint paper grain */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    overflow-x: hidden;
+  }
+  a { color: var(--cobalt); }
+  .hand { font-family: "Caveat", "Segoe Print", cursive; }
+  .display { font-family: "Cormorant Garamond", Garamond, Georgia, serif; }
+
+  /* ---------- contour blobs (background whimsy) ---------- */
+  .contours { position: absolute; z-index: -1; pointer-events: none; opacity: .55; }
+
+  /* ---------- header ---------- */
+  header {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 28px 30px;
+    text-align: center;
+  }
+  header .contours { width: 520px; left: 50%; top: -60px; transform: translateX(-50%); }
+  .eyebrow {
+    font-size: 1.5rem;
+    color: var(--bark);
+    transform: rotate(-2deg);
+    display: inline-block;
+  }
+  header h1 {
+    font-family: "Cormorant Garamond", Garamond, Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 7vw, 4.6rem);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin-top: 4px;
+  }
+  header .tagline {
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--ink-soft);
+    margin-top: 10px;
+  }
+
+  /* legend-style navigation */
+  nav.legend {
+    display: inline-flex;
+    gap: 28px;
+    margin-top: 30px;
+    padding: 10px 26px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(243, 236, 221, .7);
+  }
+  nav.legend a {
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  nav.legend .mark {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: .7rem;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  nav.legend a:hover { color: var(--cobalt); }
+  nav.legend a:hover .mark { border-color: var(--cobalt); }
+
+  /* ---------- river divider ---------- */
+  .river { display: block; width: min(560px, 80%); height: 40px; margin: 40px auto; }
+
+  /* ---------- sections ---------- */
+  section { position: relative; max-width: 1100px; margin: 0 auto; padding: 30px 28px 50px; }
+  .section-title { text-align: center; margin-bottom: 44px; }
+  .section-title h2 {
+    font-family: "Cormorant Garamond", Garamond, Georgia, serif;
+    font-weight: 500;
+    font-size: 2.3rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+  }
+  .section-title .note { font-size: 1.4rem; color: var(--bark); }
+
+  /* ---------- gallery ---------- */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 56px 40px;
+  }
+  .map-card { cursor: zoom-in; position: relative; }
+  .map-card .arch {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px 6px 6px;
+    overflow: hidden;
+    background: var(--paper-deep);
+    border: 1.5px solid var(--ink);
+  }
+  /* second, offset outline like a hand-inked frame */
+  .map-card::before {
+    content: "";
+    position: absolute;
+    top: 8px; left: 8px; right: -8px;
+    aspect-ratio: 4 / 5;
+    border-radius: 999px 999px 6px 6px;
+    border: 1px solid var(--line);
+    z-index: -1;
+  }
+  .map-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform .8s ease;
+  }
+  .map-card:hover img { transform: scale(1.04); }
+  .map-card .label { margin-top: 18px; text-align: center; }
+  .map-card .day { font-size: 1.3rem; color: var(--rose); line-height: 1.1; }
+  .map-card h3 {
+    font-family: "Cormorant Garamond", Garamond, Georgia, serif;
+    font-weight: 500;
+    font-size: 1.6rem;
+    letter-spacing: .05em;
+    margin-top: 2px;
+  }
+  .map-card p { font-style: italic; color: var(--ink-soft); font-size: 1rem; margin-top: 2px; }
+
+  /* ---------- about ---------- */
+  #about .contours { width: 460px; right: -80px; top: 0; }
+  .about-wrap {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .about-text p { font-size: 1.3rem; }
+  .about-text p + p { margin-top: 1em; }
+  .about-text .greeting {
+    font-family: "Cormorant Garamond", Garamond, Georgia, serif;
+    font-size: 3rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+  .portrait { position: relative; width: 100%; max-width: 320px; margin: 0 auto; }
+  .portrait .arch {
+    aspect-ratio: 3 / 4;
+    border-radius: 999px 999px 6px 6px;
+    overflow: hidden;
+    background: var(--sage);
+    border: 1.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .portrait .arch img { width: 100%; height: 100%; object-fit: cover; }
+  .portrait .badge {
+    position: absolute;
+    width: 130px; height: 130px;
+    top: -34px; right: -40px;
+    animation: spin 40s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .portrait .badge { animation: none; } }
+
+  /* ---------- contact ---------- */
+  .contact { text-align: center; }
+  .contact p { font-size: 1.3rem; }
+  .contact .links { margin-top: 22px; display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+  .contact .links a {
+    font-size: 1.4rem;
+    color: var(--ink);
+    text-decoration: none;
+    padding: 6px 22px;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    transition: all .2s;
+  }
+  .contact .links a:hover { background: var(--ink); color: var(--paper); }
+
+  /* ---------- botanical sprigs ---------- */
+  .sprig { position: absolute; pointer-events: none; }
+  .sprig.left { width: 110px; left: 40px; top: -30px; transform: rotate(-12deg); }
+  .sprig.right { width: 110px; right: 0; bottom: 10px; transform: scaleX(-1) rotate(-8deg); }
+
+  footer {
+    text-align: center;
+    padding: 30px 28px 60px;
+    color: var(--ink-soft);
+  }
+  footer .hand { font-size: 1.3rem; }
+  footer small { display: block; margin-top: 6px; font-size: .8rem; letter-spacing: .12em; }
+
+  /* ---------- lightbox ---------- */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(35, 30, 22, .93);
+    display: none;
+    align-items: center; justify-content: center; flex-direction: column;
+    padding: 24px; z-index: 10; cursor: zoom-out;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 85vh; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+  .lightbox .caption { color: var(--paper); margin-top: 14px; font-size: 1.6rem; }
+
+  @media (max-width: 760px) {
+    .about-wrap { grid-template-columns: 1fr; gap: 50px; }
+    .portrait { order: -1; max-width: 240px; }
+    nav.legend { gap: 16px; padding: 8px 18px; }
+    .sprig { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable drawings -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- one irregular contour shape, drawn at several scales -->
+    <path id="blob" d="M200,58 C272,52 334,112 338,182 C343,254 300,322 228,338 C156,353 82,312 68,240 C54,168 124,64 200,58Z"/>
+    <path id="blob2" d="M210,70 C290,80 330,150 320,215 C310,285 245,335 180,325 C110,315 70,255 80,190 C92,120 140,62 210,70Z"/>
+    <!-- a little botanical sprig -->
+    <g id="sprigDraw" fill="none" stroke="#3F4A26" stroke-width="2" stroke-linecap="round">
+      <path d="M60,250 C62,190 58,120 70,20"/>
+      <path d="M61,210 C40,200 25,185 20,165 C40,168 55,185 61,210Z" fill="#9AA77E" fill-opacity=".35"/>
+      <path d="M62,170 C85,160 98,142 100,122 C80,128 66,148 62,170Z" fill="#9AA77E" fill-opacity=".35"/>
+      <path d="M63,128 C44,118 34,100 33,82 C52,88 62,106 63,128Z" fill="#9AA77E" fill-opacity=".35"/>
+      <path d="M66,86 C84,76 92,60 92,44 C76,50 67,66 66,86Z" fill="#9AA77E" fill-opacity=".35"/>
+      <circle cx="70" cy="16" r="6" fill="#C98B86" fill-opacity=".6"/>
+    </g>
+  </defs>
+</svg>
+
+<header>
+  <svg class="contours" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="#9AA77E">
+      <use href="#blob" fill-opacity=".18"/>
+      <use href="#blob" fill-opacity=".18" transform="translate(200 200) scale(.78) translate(-200 -200)"/>
+      <use href="#blob" fill-opacity=".2" transform="translate(205 205) scale(.56) translate(-200 -200)"/>
+      <use href="#blob" fill="#C98B86" fill-opacity=".25" transform="translate(210 210) scale(.34) translate(-200 -200)"/>
+    </g>
+  </svg>
+  <span class="eyebrow hand">*a field notebook of maps*</span>
+  <h1>Kara<br>Jueckstock</h1>
+  <p class="tagline">Geographer &amp; storyteller · Lansing, Michigan</p>
+  <nav class="legend hand" aria-label="Site sections">
+    <a href="#maps"><span class="mark">1</span>maps</a>
+    <a href="#about"><span class="mark">2</span>about</a>
+    <a href="#contact"><span class="mark">3</span>say hello</a>
+  </nav>
+</header>
+
+<!-- dashed river divider -->
+<svg class="river" viewBox="0 0 560 40" aria-hidden="true">
+  <path d="M0,22 C70,2 140,40 210,20 S350,2 420,22 S530,36 560,18" fill="none" stroke="#1F4BFF" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/>
+  <circle cx="210" cy="20" r="3.5" fill="#1F4BFF"/>
+  <circle cx="420" cy="22" r="3.5" fill="#1F4BFF"/>
+</svg>
+
+<section id="maps">
+  <svg class="sprig left" viewBox="0 0 120 260" aria-hidden="true"><use href="#sprigDraw"/></svg>
+  <div class="section-title">
+    <h2>The Maps</h2>
+    <div class="note hand">*#30DayMapChallenge, November 2026*</div>
+  </div>
+  <div class="gallery">
+
+    <!-- To add a map: upload the image into the CartoPortfolio folder, then copy one <figure>
+         block and change the file name, day, title and caption. File names must match exactly. -->
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/ThroughtheWindow.png" alt="Downtown Lansing parcels styled as a glowing stained glass rose window" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*day 25 · is this a map?*</div>
+        <h3>Through the Window</h3>
+        <p>Downtown Lansing parcels, as stained glass.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/Saffron.png" alt="Map of saffron production centered on a gold glow over Khorasan, Iran" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*day 23 · taste*</div>
+        <h3>Threads of Gold</h3>
+        <p>Nine in ten saffron threads grow in one region of Iran.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/WeRemember.png" alt="Michigan filled with hexagons in the stripes of the transgender pride flag" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*day 20 · hexagons*</div>
+        <h3>We Remember. We Remain.</h3>
+        <p>For Trans Day of Remembrance.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/NegativeSpace.png" alt="The Great Lakes and Michigan's rivers in cobalt blue with no land drawn" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*day 19 · null*</div>
+        <h3>Negative Space</h3>
+        <p>Michigan, as told by the water.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/Networks.png" alt="Map of an underground drain network glowing on a dark background" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*networks*</div>
+        <h3>Networks</h3>
+        <p>Edit this caption to describe the map.</p>
+      </figcaption>
+    </figure>
+
+    <figure class="map-card">
+      <div class="arch"><img src="CartoPortfolio/PalmReading.jpg" alt="Hand-drawn map of Michigan as two hands, marked with friends' favorite places" loading="lazy"></div>
+      <figcaption class="label">
+        <div class="day hand">*hand-drawn*</div>
+        <h3>Palm Reading</h3>
+        <p>Where we think our favorite places are.</p>
+      </figcaption>
+    </figure>
+
+  </div>
+</section>
+
+<svg class="river" viewBox="0 0 560 40" aria-hidden="true">
+  <path d="M0,18 C90,36 160,2 250,20 S400,38 470,18 S540,6 560,22" fill="none" stroke="#1F4BFF" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/>
+  <circle cx="250" cy="20" r="3.5" fill="#1F4BFF"/>
+</svg>
+
+<section id="about">
+  <svg class="contours" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="#C98B86">
+      <use href="#blob2" fill-opacity=".14"/>
+      <use href="#blob2" fill-opacity=".16" transform="translate(200 200) scale(.75) translate(-200 -200)"/>
+      <use href="#blob2" fill-opacity=".18" transform="translate(195 205) scale(.5) translate(-200 -200)"/>
+      <use href="#blob2" fill="#9AA77E" fill-opacity=".3" transform="translate(190 210) scale(.27) translate(-200 -200)"/>
+    </g>
+  </svg>
+  <div class="about-wrap">
+    <div class="about-text">
+      <div class="greeting">Hello!</div>
+      <p>I'm a geographer and a storyteller first. I'm a creative bridge between complex concepts and people whose curiosity outpaces their attention span.</p>
+    </div>
+
+    <div class="portrait">
+      <div class="arch">
+        <!-- To add your photo: upload it to CartoPortfolio, delete the compass <svg> below,
+             and put this in its place:  <img src="CartoPortfolio/me.jpg" alt="Kara Jueckstock">  -->
+        <svg viewBox="0 0 200 200" width="62%" aria-hidden="true">
+          <g fill="none" stroke="#F3ECDD" stroke-width="2">
+            <circle cx="100" cy="100" r="70"/>
+            <circle cx="100" cy="100" r="58" stroke-dasharray="3 5"/>
+          </g>
+          <polygon points="100,22 112,100 100,178 88,100" fill="#F3ECDD"/>
+          <polygon points="22,100 100,88 178,100 100,112" fill="#F3ECDD" fill-opacity=".7"/>
+          <polygon points="100,22 112,100 100,100" fill="#3F4A26"/>
+          <circle cx="100" cy="100" r="6" fill="#C98B86"/>
+          <text x="100" y="16" text-anchor="middle" font-family="Caveat, cursive" font-size="20" fill="#F3ECDD">N</text>
+        </svg>
+      </div>
+      <svg class="badge" viewBox="0 0 140 140" aria-hidden="true">
+        <defs><path id="ring" d="M70,70 m-52,0 a52,52 0 1,1 104,0 a52,52 0 1,1 -104,0"/></defs>
+        <circle cx="70" cy="70" r="66" fill="#F3ECDD" stroke="#3F4A26" stroke-width="1.5"/>
+        <text font-family="EB Garamond, Georgia, serif" font-size="13" letter-spacing="3" fill="#3F4A26">
+          <textPath href="#ring">GEOGRAPHER · STORYTELLER · MICHIGAN ·</textPath>
+        </text>
+        <circle cx="70" cy="70" r="5" fill="#1F4BFF"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<svg class="river" viewBox="0 0 560 40" aria-hidden="true">
+  <path d="M0,22 C70,2 140,40 210,20 S350,2 420,22 S530,36 560,18" fill="none" stroke="#1F4BFF" stroke-width="2" stroke-dasharray="6 7" stroke-linecap="round"/>
+  <circle cx="420" cy="22" r="3.5" fill="#1F4BFF"/>
+</svg>
+
+<section id="contact" class="contact">
+  <svg class="sprig right" viewBox="0 0 120 260" aria-hidden="true"><use href="#sprigDraw"/></svg>
+  <div class="section-title">
+    <h2>Say Hello</h2>
+    <div class="note hand">*every map starts with a conversation*</div>
+  </div>
+  <p>Have a story hiding in your data? I'd love to help you tell it.</p>
+  <div class="links hand">
+    <a href="mailto:hello@example.com">email me</a>
+    <a href="https://www.linkedin.com/in/your-profile" target="_blank" rel="noopener">linkedin</a>
+  </div>
+</section>
+
+<footer>
+  <div class="hand">*drawn with care in Lansing, Michigan*</div>
+  <small>© 2026 KARA JUECKSTOCK</small>
+</footer>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <img id="lightbox-img" src="" alt="">
+  <div class="caption hand" id="lightbox-caption"></div>
+</div>
+
+<script>
+  const box = document.getElementById('lightbox');
+  const boxImg = document.getElementById('lightbox-img');
+  const boxCap = document.getElementById('lightbox-caption');
+  document.querySelectorAll('.map-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const img = card.querySelector('img');
+      boxImg.src = img.src;
+      boxImg.alt = img.alt;
+      boxCap.textContent = card.querySelector('h3').textContent;
+      box.classList.add('open');
+    });
+  });
+  box.addEventListener('click', () => box.classList.remove('open'));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') box.classList.remove('open'); });
+</script>
+
+</body>
+</html>
